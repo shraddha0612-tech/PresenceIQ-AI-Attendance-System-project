@@ -17,3 +17,8 @@ segno
 pillow
 
 streamlit
+
+librosa
+resemblyzer
+
+setuptools==69.5.1
