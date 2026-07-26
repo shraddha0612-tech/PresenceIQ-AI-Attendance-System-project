@@ -37,11 +37,7 @@ def get_trained_model():
     
     student_db = get_all_students()
 
-    st.write("Total Students:", len(student_db))
-
-    for student in student_db:
-        st.write(student)
-
+    
     if not student_db:
         return None
 
@@ -52,22 +48,20 @@ def get_trained_model():
             X.append(np.array(embedding))
             y.append(student.get('student_id'))
 
-    st.write("Embeddings Found:", len(X))
+   
     if len(X) == 0:
         return None
 
-    clf = SVC(kernel='linear', probability=True, class_weight='balanced')
-
-    try:
+    if len(set(y)) >= 2:
+        clf = SVC(kernel='linear', probability=True, class_weight='balanced')
         clf.fit(X, y)
-    except Exception as e:
-        st.error(f"Classifier training failed: {e}")
-        return None
+    else:
+        clf = None
 
     return {
-    'clf': clf,
-    'X': X,
-    'y': y
+       'clf': clf,
+       'X': X,
+       'y': y
    }
 
 

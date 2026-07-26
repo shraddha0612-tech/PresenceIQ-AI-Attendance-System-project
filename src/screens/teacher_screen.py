@@ -151,19 +151,17 @@ def teacher_tab_take_attendance():
 
                     for idx, img in enumerate(st.session_state.attendance_images):
                          img_np = np.array(img.convert('RGB'))
-                         try:
-                           detected, _, _ = predict_attendance(img_np)
-                         except Exception as e:
-                           st.error(f"Prediction Error: {e}")
-                           st.stop()
+                         detected, _, _ = predict_attendance(img_np)
                          if detected:
                               for sid in detected.keys():
                                    student_id = int(sid)
 
                                    all_detected_ids.setdefault(student_id,[]).append(f"Photo {idx+1}")
                     enrolled_res = supabase.table('subject_students').select("*,students(*)").eq('subject_id',selected_subject_id).execute()
+                    
 
                     enrolled_students = enrolled_res.data
+                    
                     st.error(f"Type: {type(enrolled_students)}")
                     st.error(f"Value: {repr(enrolled_students)}")
 
@@ -193,7 +191,7 @@ def teacher_tab_take_attendance():
                                    'is_present': bool(is_present)
                               })
                     
-                    attendance_result_dialog(pd.DataFrame(results),attendance_to_log)
+                         attendance_result_dialog(pd.DataFrame(results),attendance_to_log)
 
      with c3:
           if st.button('Use Voice Attendance', type='primary',width='stretch', icon=':material/mic:'):
