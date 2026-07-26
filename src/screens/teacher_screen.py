@@ -115,8 +115,11 @@ def teacher_tab_take_attendance():
           if st.button('Add Photos', type='primary', icon=':material/photo_prints:',width='stretch'):
                add_photos_dialog()
      selected_subject_id = subject_options[selected_subject_label]
+     
 
      st.divider()
+
+     
 
      # st.write("Images count:", len(st.session_state.attendance_images))
      if st.session_state.attendance_images:
@@ -144,6 +147,7 @@ def teacher_tab_take_attendance():
           if st.button('Run Face Analysis', width='stretch', type='tertiary', icon=':material/delete:',disabled=not has_photos):
                with st.spinner('Deep scanning classroom photos...'):
                     all_detected_ids = {}
+                   
 
                     for idx, img in enumerate(st.session_state.attendance_images):
                          img_np = np.array(img.convert('RGB'))
@@ -157,10 +161,14 @@ def teacher_tab_take_attendance():
                     enrolled_res = supabase.table('subject_students').select("*,students(*)").eq('subject_id',selected_subject_id).execute()
 
                     enrolled_students = enrolled_res.data
+                    st.error(f"Type: {type(enrolled_students)}")
+                    st.error(f"Value: {repr(enrolled_students)}")
+
                     if not enrolled_students:
                          st.warning('No students enrolled in this course')
                     else :
                          results, attendance_to_log = [],[]
+                         
                          current_timestamp = datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
 
                          for node in enrolled_students:
@@ -181,7 +189,7 @@ def teacher_tab_take_attendance():
                                    'timestamp': current_timestamp,
                                    'is_present': bool(is_present)
                               })
-
+                    
                     attendance_result_dialog(pd.DataFrame(results),attendance_to_log)
 
      with c3:
