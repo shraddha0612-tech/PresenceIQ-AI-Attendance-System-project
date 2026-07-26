@@ -37,6 +37,11 @@ def get_trained_model():
     
     student_db = get_all_students()
 
+    st.write("Total Students:", len(student_db))
+
+    for student in student_db:
+        st.write(student)
+
     if not student_db:
         return None
 
@@ -47,16 +52,23 @@ def get_trained_model():
             X.append(np.array(embedding))
             y.append(student.get('student_id'))
 
+    st.write("Embeddings Found:", len(X))
     if len(X) == 0:
-        return 0
+        return None
 
     clf = SVC(kernel='linear', probability=True, class_weight='balanced')
+
     try:
         clf.fit(X, y)
-    except ValueError:
-        pass
+    except Exception as e:
+        st.error(f"Classifier training failed: {e}")
+        return None
 
-    return{'clf': clf, 'X': X, 'y': y}
+    return {
+    'clf': clf,
+    'X': X,
+    'y': y
+   }
 
 
 def train_classifier():
@@ -65,7 +77,11 @@ def train_classifier():
     return bool(model_data)
 
 def predict_attendance(class_image_np):
-    encodings = get_face_embeddings(class_image_np)
+    try:
+        encodings = get_face_embeddings(class_image_np)
+    except Exception as e:
+        st.error(f"Face detection failed: {e}")
+        return {}, [], 0
 
     detected_student = {}
 
@@ -85,6 +101,9 @@ def predict_attendance(class_image_np):
             predicted_id=int(clf.predict([encoding])[0])
         else:
             predicted_id=int(all_students[0])
+
+        if predicted_id not in y_train:
+           continue
 
         student_embedding = X_train[y_train.index(predicted_id)]
 

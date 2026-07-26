@@ -151,8 +151,11 @@ def teacher_tab_take_attendance():
 
                     for idx, img in enumerate(st.session_state.attendance_images):
                          img_np = np.array(img.convert('RGB'))
-                         detected, _, _ = predict_attendance(img_np)
-
+                         try:
+                           detected, _, _ = predict_attendance(img_np)
+                         except Exception as e:
+                           st.error(f"Prediction Error: {e}")
+                           st.stop()
                          if detected:
                               for sid in detected.keys():
                                    student_id = int(sid)
