@@ -162,9 +162,7 @@ def teacher_tab_take_attendance():
 
                     enrolled_students = enrolled_res.data
                     
-                    st.error(f"Type: {type(enrolled_students)}")
-                    st.error(f"Value: {repr(enrolled_students)}")
-
+                    
                     if not enrolled_students:
                          st.warning('No students enrolled in this course')
                     else :
