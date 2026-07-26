@@ -30,14 +30,17 @@ def get_face_embeddings(image_np):
 
     return encodings
 
+@st.cache_resource
 def get_trained_model():
-    student_db = get_all_students()
-    if not student_db:
-        return None, None
-
     X = []
     y = []
+    
+    student_db = get_all_students()
 
+    if not student_db:
+        return None
+
+    
     for student in student_db:
         embedding = student.get("face_embedding")
         if embedding:
@@ -69,7 +72,7 @@ def predict_attendance(class_image_np):
     model_data = get_trained_model()
 
     if not model_data:
-        return {}, [], 0
+        return detected_student, [], len(encodings)
     
     clf = model_data['clf']
     X_train = model_data['X']
